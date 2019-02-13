@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOGGER_HOME" value="${logging.home.dir}" />
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${LOGGER_HOME}getawr.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOGGER_HOME}getawr-%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+    <logger name="app" level="DEBUG">
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <root level="ERROR">
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

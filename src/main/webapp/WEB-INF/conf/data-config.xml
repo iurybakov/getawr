@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans.xsd
+                                http://www.springframework.org/schema/data/jpa
+                                http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                                http://www.springframework.org/schema/tx
+                                http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+
+    <tx:annotation-driven/>
+
+    <jpa:repositories base-package="app.db.repositories.h2"
+                      transaction-manager-ref="h2TransactionManager"
+                      entity-manager-factory-ref="h2EntityManager"/>
+
+    <jpa:repositories base-package="app.db.repositories.ora"
+                      transaction-manager-ref="oracleTransactionManager"
+                      entity-manager-factory-ref="oracleEntityManager"/>
+
+    <bean id="oraInfoDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="org.h2.Driver"/>
+        <property name="url" value="${h2.url}"/>
+        <property name="username" value="${h2.user}"/>
+        <property name="password" value="${h2.pass}"/>
+    </bean>
+
+    <bean id="h2EntityManager"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="oraInfoDataSource">
+        <property name="packagesToScan" value="app.db.mappings.h2"/>
+        <property name="persistenceUnitName" value="h2EntityManager"/>
+        <property name="dataSource" ref="oraInfoDataSource"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+        <property name="jpaProperties">
+            <map>
+                <entry key="hibernate.show_sql" value="true"/>
+                <entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+                <entry key="hibernate.hbm2ddl.auto" value="update"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="h2TransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="h2EntityManager"/>
+    </bean>
+
+    <bean id="h2Service" class="app.db.services.h2.H2Service"/>
+
+    <bean id="dataSourceStorage" class="app.db.utils.DataSourcesCache">
+        <constructor-arg>
+            <bean class="com.google.common.cache.CacheBuilder" factory-method="from">
+                <constructor-arg value="concurrencyLevel=16, initialCapacity=32, maximumSize=128, expireAfterAccess=1h"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg ref="h2Service"/>
+    </bean>
+
+    <bean id="oracleEntityManager"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+          depends-on="dataSourceStorage; h2Service">
+        <property name="packagesToScan" value="app.db.mappings.ora"/>
+        <property name="persistenceUnitName" value="oracleEntityManager"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+        <property name="jpaProperties">
+            <map>
+                <entry key="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
+                <entry key="hibernate.multiTenancy" value="DATABASE"/>
+                <entry key="hibernate.hbm2ddl.auto" value="none"/>
+                <entry key="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+                <entry key="hibernate.multi_tenant_connection_provider">
+                    <bean class="app.db.utils.OracleMultiTenantConnectionProviderMap">
+                        <constructor-arg ref="oraInfoDataSource"/>
+                        <constructor-arg ref="dataSourceStorage"/>
+                    </bean>
+                </entry>
+                <entry key="hibernate.tenant_identifier_resolver">
+                    <bean class="app.db.utils.OracleTenantIdentityResolver"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="oracleTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="oracleEntityManager"/>
+    </bean>
+
+    <bean id="oracleService" class="app.db.services.ora.OracleService"/>
+
+</beans>
+

@@ -1,0 +1,57 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:s="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <bean id="authRestAuthenticationEntryPoint" class="app.security.auth.RestAuthenticationEntryPoint"/>
+    <bean id="authAccessDeniedHandler" class="app.security.auth.CustomAccessDeniedHandler"/>
+    <bean id="authSuccessHandler" class="app.security.auth.AuthenticationSuccessHandler"/>
+    <bean id="authFailureHandler" class="app.security.auth.AuthenticationFailHandler"/>
+    <bean id="authEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <s:http entry-point-ref="authRestAuthenticationEntryPoint" use-expressions="true">
+
+        <s:intercept-url pattern="/rest/edit/arg1" access="permitAll"/>
+        <s:intercept-url pattern="/rest/edit" access="hasRole('ADMIN')"/>
+
+        <s:access-denied-handler ref="authAccessDeniedHandler"/>
+
+        <s:form-login  login-processing-url="/rest/edit/in"
+                       username-parameter="arg1"
+                       password-parameter="arg2"
+                       authentication-success-handler-ref="authSuccessHandler"
+                       authentication-failure-handler-ref="authFailureHandler"/>
+
+        <s:logout logout-success-url="/"
+                  logout-url="/rest/edit/out"
+                  delete-cookies="JSESSIONID" />
+
+        <s:csrf disabled="true" />
+
+    </s:http>
+
+    <s:authentication-manager>
+        <s:authentication-provider>
+            <s:user-service>
+                <s:user name="user" password="$2a$04$/vqXgGfiMrTuWV3Tn/Rh7e6iqQ2rLWGTKqPf/8M86FUyiPGV/vRiC" authorities="ROLE_ADMIN"/>
+            </s:user-service>
+            <s:password-encoder ref="authEncoder" hash="bcrypt"/>
+        </s:authentication-provider>
+    </s:authentication-manager>
+
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
