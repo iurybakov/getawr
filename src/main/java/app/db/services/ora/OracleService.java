@@ -3,6 +3,8 @@ package app.db.services.ora;
 import app.db.mappings.ora.DbaHistSnapshot;
 import app.db.repositories.ora.OracleSnapRepository;
 import app.web.json.ResponseData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class OracleService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OracleService.class);
 
     @PersistenceContext(unitName  = "oracleEntityManager")
     private EntityManager entityManager;
@@ -37,43 +42,74 @@ public class OracleService {
     }
 
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
-    public ResponseData getPeriods() {
+    public ResponseData getPeriods() throws Exception {
 
         ResponseData responseData = new ResponseData();
         List<DbaHistSnapshot> list = oracleSnapRepository.getMaxMinSnapPeriods();
-        System.out.println(list.size());
+        if (list == null || list.size() == 0)
+            throw new Exception("Error, empty list snaps");
         responseData.setData(list);
         return responseData;
     }
 
+
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     @SuppressWarnings("unchecked")
-    public Object getAwr(Map<String, String> data) throws Exception {
+    public Map<String, Long> getSnapsId(Map<String, String> data) throws Exception {
+
+        final Map<String, Long> snapsMap = new HashMap<>();
+        DbaHistSnapshot dbaHistSnapshot;
 
         List<DbaHistSnapshot> listSnap = oracleSnapRepository.findAllSnapPeriodsBydbIdAndBetween(Long.parseLong(data.get("dbId")),
                 Timestamp.from(Instant.parse(data.get("dateFrom"))),
                 Timestamp.from(Instant.parse(data.get("dateTo"))));
-        Long toSnap = null;
+
+        if (listSnap == null || listSnap.isEmpty())
+            throw new Exception("Error, empty snaps list between specify periods");
 
         if (listSnap.size() == 0)
             throw new Exception("Error, no report items found for the specified period");
         if (listSnap.size() == 1) {
-            if (oracleSnapRepository.existsById(listSnap.get(0).getSnapId() + 1))
-                toSnap = listSnap.get(0).getSnapId() + 1;
-            else if (oracleSnapRepository.existsById(listSnap.get(0).getSnapId() - 1))
-                toSnap = listSnap.get(0).getSnapId() - 1;
+            if (oracleSnapRepository.existsById(listSnap.get(0).getSnapId() + 1L))
+                dbaHistSnapshot = oracleSnapRepository.findById(listSnap.get(0).getSnapId() + 1L).get();
+            else if (oracleSnapRepository.existsById(listSnap.get(0).getSnapId() - 1L))
+                dbaHistSnapshot = oracleSnapRepository.findById(listSnap.get(0).getSnapId() - 1L).get();
             else
                 throw new Exception("Error, found only one record for BDID '" + listSnap.get(0).getDbId() + "'");
         } else
-            toSnap = listSnap.get(1).getSnapId();
+            dbaHistSnapshot = listSnap.get(1);
+
+        if(dbaHistSnapshot.getSnapId() > listSnap.get(0).getSnapId()) {
+            snapsMap.put("fromDate", listSnap.get(0).getBeginIntervalTime().getTime());
+            snapsMap.put("fromSnap", listSnap.get(0).getSnapId());
+            snapsMap.put("toDate", dbaHistSnapshot.getEndIntervalTime().getTime());
+            snapsMap.put("toSnap", dbaHistSnapshot.getSnapId());
+        }
+        else {
+            snapsMap.put("fromDate", dbaHistSnapshot.getBeginIntervalTime().getTime());
+            snapsMap.put("fromSnap", dbaHistSnapshot.getSnapId());
+            snapsMap.put("toDate", listSnap.get(0).getEndIntervalTime().getTime());
+            snapsMap.put("toSnap", listSnap.get(0).getSnapId());
+        }
+
+        snapsMap.put("dbId", listSnap.get(0).getDbId());
+        snapsMap.put("instanceNumber", listSnap.get(0).getInstanceNumber());
+
+        return snapsMap;
+    }
+
+
+    @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
+    @SuppressWarnings("unchecked")
+    public char[] getAwr(Map<String, Long> data) throws Exception {
 
         final Query query = entityManager.createNativeQuery("SELECT output FROM TABLE(DBMS_WORKLOAD_REPOSITORY.AWR_REPORT_HTML(?1, ?2, ?3, ?4))");
-        query.setParameter(1, listSnap.get(0).getDbId());
-        query.setParameter(2, listSnap.get(0).getInstanceNumber());
-        query.setParameter(3, listSnap.get(0).getSnapId());
-        query.setParameter(4, toSnap);
+        query.setParameter(1, data.get("dbId"));
+        query.setParameter(2, data.get("instanceNumber"));
+        query.setParameter(3, data.get("fromSnap"));
+        query.setParameter(4, data.get("toSnap"));
 
-        return query.getResultStream().collect(Collectors.joining());
+        return query.getResultStream().collect(Collectors.joining()).toString().toCharArray();
     }
 }
 

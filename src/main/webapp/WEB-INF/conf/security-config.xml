@@ -2,9 +2,9 @@
        xmlns:s="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/security
-        http://www.springframework.org/schema/security/spring-security.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/security
+                           http://www.springframework.org/schema/security/spring-security.xsd">
 
     <bean id="authRestAuthenticationEntryPoint" class="app.security.auth.RestAuthenticationEntryPoint"/>
     <bean id="authAccessDeniedHandler" class="app.security.auth.CustomAccessDeniedHandler"/>
@@ -15,7 +15,8 @@
     <s:http entry-point-ref="authRestAuthenticationEntryPoint" use-expressions="true">
 
         <s:intercept-url pattern="/rest/edit/arg1" access="permitAll"/>
-        <s:intercept-url pattern="/rest/edit" access="hasRole('ADMIN')"/>
+        <s:intercept-url pattern="/rest/edit" access="isAuthenticated()"/>
+        <s:intercept-url pattern="/rest/edit/admin" access="hasRole('ADMIN')"/>
 
         <s:access-denied-handler ref="authAccessDeniedHandler"/>
 
@@ -35,10 +36,22 @@
 
     <s:authentication-manager>
         <s:authentication-provider>
-            <s:user-service>
-                <s:user name="user" password="$2a$04$/vqXgGfiMrTuWV3Tn/Rh7e6iqQ2rLWGTKqPf/8M86FUyiPGV/vRiC" authorities="ROLE_ADMIN"/>
-            </s:user-service>
+
+            <s:jdbc-user-service data-source-ref="oraInfoDataSource"
+                                 users-by-username-query="
+                                 SELECT     USERNAME, PASSWORD, ENABLED
+                                 FROM       SEC_USERS.TBL_USERS
+                                 WHERE  DELETED=false AND USERNAME=?;"
+
+                                 authorities-by-username-query="
+                                 SELECT     U.USERNAME, R.ROLENAME
+                                 FROM       SEC_USERS.TBL_USERS U
+                                 JOIN       SEC_USERS.TBL_USER_ROLE R
+                                 ON     U.ID = R.USERID
+                                 WHERE  U.DELETED=false AND U.USERNAME=?;"/>
+
             <s:password-encoder ref="authEncoder" hash="bcrypt"/>
+
         </s:authentication-provider>
     </s:authentication-manager>
 

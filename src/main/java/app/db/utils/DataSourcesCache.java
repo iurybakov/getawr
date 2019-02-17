@@ -19,7 +19,7 @@ public class DataSourcesCache {
 
     private final LoadingCache<String, BasicDataSource> cache;
 
-
+    @SuppressWarnings("unchecked")
     public DataSourcesCache(final CacheBuilder cacheBuilder, final H2Service h2Service) {
 
         final CacheLoader<String, BasicDataSource> cacheLoader = new CacheLoader<String, BasicDataSource>() {
@@ -36,7 +36,7 @@ public class DataSourcesCache {
                 LOG.error(e.getMessage());
             }
         };
-        LOG.info("-----------------------------------------_____________________________________((((((((((((**************************************&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
         this.cache = cacheBuilder.removalListener(removalListener).build(cacheLoader);
     }
 

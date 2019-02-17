@@ -1,4 +1,4 @@
-package app.db.mappings.h2;
+package app.db.mappings.h2.ormt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -7,11 +7,11 @@ import javax.persistence.*;
 @JsonIgnoreProperties({"deleted"})
 @Entity
 @Table(name = "ORA_META", schema = "ORA_AWR")
-@SequenceGenerator(name = "ID", sequenceName = "ORA_AWR.ORA_ID_SEQUENCE", allocationSize = 1, schema = "ORA_AWR")
+@SequenceGenerator(name = "IDO", sequenceName = "ORA_AWR.ORA_ID_SEQUENCE", allocationSize = 1, schema = "ORA_AWR")
 public class OraMeta {
 
     @Id
-    @GeneratedValue(generator = "ID", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "IDO", strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
     @Column(name = "name", nullable = false, unique = true) // TODO add name + _host rule of naming in ui

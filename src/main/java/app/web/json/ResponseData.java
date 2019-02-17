@@ -21,7 +21,8 @@ public class ResponseData {
         return data;
     }
 
-    public void setData(final List<?> data) {
+    public ResponseData setData(final List<?> data) {
         this.data = data;
+        return this;
     }
 }

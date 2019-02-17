@@ -4,11 +4,11 @@
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                                http://www.springframework.org/schema/beans/spring-beans.xsd
-                                http://www.springframework.org/schema/data/jpa
-                                http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
-                                http://www.springframework.org/schema/tx
-                                http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/data/jpa
+                           http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
 
     <tx:annotation-driven/>
 
@@ -29,7 +29,7 @@
 
     <bean id="h2EntityManager"
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="oraInfoDataSource">
-        <property name="packagesToScan" value="app.db.mappings.h2"/>
+        <property name="packagesToScan" value="app.db.mappings.h2.*"/>
         <property name="persistenceUnitName" value="h2EntityManager"/>
         <property name="dataSource" ref="oraInfoDataSource"/>
         <property name="jpaVendorAdapter">
@@ -50,7 +50,7 @@
 
     <bean id="h2Service" class="app.db.services.h2.H2Service"/>
 
-    <bean id="dataSourceStorage" class="app.db.utils.DataSourcesCache">
+    <bean id="dataSourceCache" class="app.db.utils.DataSourcesCache">
         <constructor-arg>
             <bean class="com.google.common.cache.CacheBuilder" factory-method="from">
                 <constructor-arg value="concurrencyLevel=16, initialCapacity=32, maximumSize=128, expireAfterAccess=1h"/>
@@ -61,7 +61,7 @@
 
     <bean id="oracleEntityManager"
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-          depends-on="dataSourceStorage; h2Service">
+          depends-on="dataSourceCache; h2Service">
         <property name="packagesToScan" value="app.db.mappings.ora"/>
         <property name="persistenceUnitName" value="oracleEntityManager"/>
         <property name="jpaVendorAdapter">
@@ -76,7 +76,7 @@
                 <entry key="hibernate.multi_tenant_connection_provider">
                     <bean class="app.db.utils.OracleMultiTenantConnectionProviderMap">
                         <constructor-arg ref="oraInfoDataSource"/>
-                        <constructor-arg ref="dataSourceStorage"/>
+                        <constructor-arg ref="dataSourceCache"/>
                     </bean>
                 </entry>
                 <entry key="hibernate.tenant_identifier_resolver">
@@ -91,6 +91,7 @@
     </bean>
 
     <bean id="oracleService" class="app.db.services.ora.OracleService"/>
+    <bean id="adminAppH2Service" class="app.db.services.h2.AdminAppH2Service"/>
 
 </beans>
 

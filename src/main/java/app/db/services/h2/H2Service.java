@@ -1,7 +1,7 @@
 package app.db.services.h2;
 
-import app.db.mappings.h2.OraMeta;
-import app.db.mappings.h2.OraUrl;
+import app.db.mappings.h2.ormt.OraMeta;
+import app.db.mappings.h2.ormt.OraUrl;
 import app.db.repositories.h2.OraMetaRepository;
 import app.db.repositories.h2.OraUrlRepository;
 import app.web.json.ResponseData;
@@ -25,6 +25,7 @@ public class H2Service {
     private OraUrlRepository oraUrlRepository;
     @Autowired
     private OraMetaRepository oraMetaRepository;
+
 
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public ResponseData getOraMetaResponseData(final Map<String, String> filter, final Pageable pageNum)  {
@@ -106,33 +107,32 @@ public class H2Service {
     @Transactional(transactionManager = "h2TransactionManager")
     public String insertNewOraCredential(final Map<String, String> credential) {
 
-        final OraUrl url = new OraUrl();
-        final OraMeta meta = new OraMeta();
+        final OraUrl oraUrl = new OraUrl();
+        final OraMeta oraMeta = new OraMeta();
+        final String responseMessage = "row inserted successfully";
 
-        String responseMessage = "row inserted successfully";
+        oraMeta.setName(credential.remove("name"));
+        oraUrl.initUrlFields(credential);
 
-        meta.setName(credential.remove("name"));
-        url.initUrlFields(credential);
+        oraMetaRepository.save(oraMeta);
+        oraUrl.setId(oraMeta.getId());
 
-        oraMetaRepository.save(meta);
-        url.setId(meta.getId());
-
-        oraUrlRepository.save(url);
+        oraUrlRepository.save(oraUrl);
 
         credential.clear();
-        credential.put("id", String.valueOf(meta.getId()));
+        credential.put("id", String.valueOf(oraMeta.getId()));
 
         return responseMessage;
     }
     @Transactional(transactionManager = "h2TransactionManager")
     public String updateOraCredential(Map<String, String> credential) {
 
-        OraUrl oraUrl = oraUrlRepository.findById(Long.parseLong(credential.remove("id"))).get();
-        oraUrl.getOraMeta().setName(credential.remove("name"));
+        OraUrl url = oraUrlRepository.findById(Long.parseLong(credential.remove("id"))).get();
+        url.getOraMeta().setName(credential.remove("name"));
         if (credential.get("pass").matches("=*"))
-            credential.put("pass", oraUrl.getPass());
-        oraUrl.initUrlFields(credential);
-        oraUrlRepository.save(oraUrl);
+            credential.put("pass", url.getPass());
+        url.initUrlFields(credential);
+        oraUrlRepository.save(url);
 
         return "row updated successfully";
     }

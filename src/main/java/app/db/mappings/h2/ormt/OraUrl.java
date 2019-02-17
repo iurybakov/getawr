@@ -1,5 +1,6 @@
-package app.db.mappings.h2;
+package app.db.mappings.h2.ormt;
 
+import app.db.mappings.h2.ormt.OraMeta;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;

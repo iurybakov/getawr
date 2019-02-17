@@ -12,4 +12,11 @@
     <mvc:annotation-driven />
     <context:component-scan base-package="app.web.controller" />
 
+    <bean id="requestHandler" class="app.web.controller.RequestHandler">
+        <constructor-arg ref="h2Service" />
+        <constructor-arg ref="oracleService" />
+        <constructor-arg ref="adminAppH2Service" />
+        <constructor-arg ref="dataSourceCache" />
+    </bean>
+
 </beans>

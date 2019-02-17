@@ -7,7 +7,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.lang.Nullable;
 
 @NoRepositoryBean
-public interface OraInfoRepository<T, ID extends Long> extends PagingAndSortingRepository<T, Long> {
+public interface ContentRepository<T, ID extends Long> extends PagingAndSortingRepository<T, Long> {
     @Nullable
     Page<T> findByDeleted(Boolean deleted, Pageable pageable);
 }

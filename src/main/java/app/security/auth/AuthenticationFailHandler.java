@@ -1,5 +1,7 @@
 package app.security.auth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -12,10 +14,11 @@ import java.io.IOException;
 @Component
 public class AuthenticationFailHandler extends SimpleUrlAuthenticationFailureHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFailHandler.class);
     private String defaultFailureUrl = null;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
