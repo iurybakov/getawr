@@ -9,9 +9,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>getawr Maven Webapp</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <name>getawr</name>
+
+    <url>http://176.53.162.238:8080/getawr/</url>
 
     <properties>
         <encoding>UTF-8</encoding>
@@ -21,11 +21,14 @@
         <spring.data-version>2.1.4.RELEASE</spring.data-version>
         <h2database-version>1.4.197</h2database-version>
         <hibernate-version>5.4.1.Final</hibernate-version>
-        <wildfly-hostname>176.53.162.238</wildfly-hostname>
         <spring-security-version>5.1.3.RELEASE</spring-security-version>
         <guava-version>27.0.1-jre</guava-version>
+        <logback-version>1.2.3</logback-version>
+        <dbcp-version>1.4</dbcp-version>
+        <jackson-version>2.9.8</jackson-version>
 
         <!-- wildfly deploy credentials -->
+        <wildfly-hostname>176.53.162.238</wildfly-hostname>
         <wildfly-port>9990</wildfly-port>
         <wildfly-username>rybakov</wildfly-username>
         <wildfly-password>zpOMG6xz</wildfly-password>
@@ -34,66 +37,32 @@
 
     <dependencies>
 
+        <!-- logback-classic -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${logback-version}</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>ch.qos.logback</groupId>-->
-            <!--<artifactId>logback-core</artifactId>-->
-            <!--<version>1.2.3</version>-->
-        <!--</dependency>-->
-
-
-
-        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.slf4j/slf4j-api &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-api</artifactId>-->
-            <!--<version>1.7.25</version>-->
-        <!--</dependency>-->
-
-
-
-
-        <!-- com.fasterxml.jackson.core/jackson-core -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.9.8</version>
-        </dependency>
-
+        <!-- commons-dbcp -->
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
-            <version>1.2.2</version>
+            <version>${dbcp-version}</version>
         </dependency>
 
-        <!-- com.google.guava/guava -->
+        <!-- jackson-core -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-version}</version>
+        </dependency>
+
+        <!-- guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava-version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${spring-security-version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>${spring-security-version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${spring-security-version}</version>
         </dependency>
 
         <!-- hibernate-core -->
@@ -128,10 +97,27 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring-version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
             <version>${spring.data-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring-security-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring-security-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring-security-version}</version>
         </dependency>
 
         <!-- servlet api -->
@@ -146,16 +132,17 @@
     <build>
         <finalName>getawr</finalName>
         <plugins>
+
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>2.0.0.Final</version>
-                <!--<configuration>-->
-                <!--<hostname>${wildfly-hostname}</hostname>-->
-                <!--<port>${wildfly-port}</port>-->
-                <!--<username>${wildfly-username}</username>-->
-                <!--<password>${wildfly-password}</password>-->
-                <!--</configuration>-->
+                <configuration>
+                    <hostname>${wildfly-hostname}</hostname>
+                    <port>${wildfly-port}</port>
+                    <username>${wildfly-username}</username>
+                    <password>${wildfly-password}</password>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -167,6 +154,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
 </project>

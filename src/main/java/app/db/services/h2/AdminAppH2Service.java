@@ -4,20 +4,22 @@ import app.db.mappings.h2.sec.TblUserRole;
 import app.db.mappings.h2.sec.TblUsers;
 import app.db.repositories.h2.TblUserRoleRepository;
 import app.db.repositories.h2.TblUsersRepository;
+import app.db.services.apiservice.AdminJpaService;
 import app.web.json.ResponseData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
-public class AdminAppH2Service {
+public class AdminAppH2Service implements AdminJpaService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AdminAppH2Service.class);
 
     @Autowired
     private TblUserRoleRepository tblUserRoleRepository;
@@ -26,7 +28,12 @@ public class AdminAppH2Service {
 
 
     @Transactional(transactionManager = "h2TransactionManager")
-    private void insert(final Map<String, String> credential) {
+    private void insert(final Map<String, String> credential) throws Exception {
+
+        LOG.info("Insert user");
+
+        if (tblUsersRepository.existsByUsernameAndDeleted(credential.get("user"), false))
+            throw new Exception("Specify username is exists");
 
         final TblUsers tblUsers = new TblUsers();
         final TblUserRole tblUserRole = new TblUserRole();
@@ -45,6 +52,7 @@ public class AdminAppH2Service {
     @Transactional(transactionManager = "h2TransactionManager")
     private boolean operate(final Long id, final String action) {
 
+        LOG.info("Operate user");
         final Optional<TblUsers> users = tblUsersRepository.findById(id);
 
         if (!users.isPresent())
@@ -55,7 +63,7 @@ public class AdminAppH2Service {
         switch (action) {
             case "delete":
                 tbUs.setDeleted(true);
-                tbUs.setUsername("~" + tbUs.getUsername() + tbUs.getId());
+                tbUs.setUsername("~" + tbUs.getUsername() + tbUs.getId()); //TODO запретить добавлять записи, где имя с тильдой в начеле
                 break;
             case "disable":
                 tbUs.setEnabled(false);
@@ -75,6 +83,7 @@ public class AdminAppH2Service {
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public ResponseData getListUsers(final Pageable pageNum) {
 
+        LOG.info("Get list users");
         final ResponseData responseData = new ResponseData();
         final Page<TblUsers> page = tblUsersRepository.findByDeleted(false, pageNum);
         final Map<String, String> properties = new HashMap<>();
@@ -90,7 +99,7 @@ public class AdminAppH2Service {
     }
 
 
-    public ResponseData insertUser(final Map<String, String> credential, final Pageable pageNum) {
+    public ResponseData insertUser(final Map<String, String> credential, final Pageable pageNum) throws Exception {
 
         insert(credential);
 

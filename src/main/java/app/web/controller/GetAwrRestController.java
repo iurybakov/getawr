@@ -1,7 +1,13 @@
 package app.web.controller;
 
+import app.web.apihandle.AdminApiRequestHandler;
+import app.web.apihandle.AwrHistoryApiRequestHandler;
+import app.web.apihandle.OraContentApiRequestHandler;
+import app.web.apihandle.OracleAwrApiRequestHandler;
 import app.web.json.Request;
 import app.web.json.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GetAwrRestController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GetAwrRestController.class);
+
     @Autowired
-    private RequestHandler requestHandler;
+    private AdminApiRequestHandler admin;
+    @Autowired
+    private AwrHistoryApiRequestHandler awrHistory;
+    @Autowired
+    private OracleAwrApiRequestHandler oracleAwr;
+    @Autowired
+    private OraContentApiRequestHandler oraContent;
 
 
     @PostMapping(value = "/home", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -23,11 +37,11 @@ public class GetAwrRestController {
 
         switch (request.getType()) {
             case "content":
-                return requestHandler.handleHomeGetContentOraMetaRequest(request);
+                return oraContent.getContentOraMeta(request);
             case "periods":
-                return requestHandler.handleGetOraclePeriodRequest(request);
+                return oracleAwr.getMinMaxPeriod(request);
             case "awr":
-                return requestHandler.handleGetOracleAwrRequest(request);
+                return oracleAwr.getAwr(request);
         }
         return Response.createErrorResponse(request, "Error, unknown request type '" + request.getType() + "'");
     }
@@ -39,9 +53,9 @@ public class GetAwrRestController {
 
         switch (request.getType()) {
             case "content":
-                return requestHandler.handleHistoryGetContent(request);
+                return awrHistory.getContent(request);
             case "awr":
-                return requestHandler.handleHistoryGetAwr(request);
+                return awrHistory.getAwr(request);
         }
         return Response.createErrorResponse(request, "Error, unknown request type '" + request.getType() + "'");
     }
@@ -53,13 +67,13 @@ public class GetAwrRestController {
 
         switch (request.getType()) {
             case "content":
-                return requestHandler.handleGetEditContentOraUrlRequest(request);
+                return oraContent.getContentOraUrl(request);
             case "insert":
-                return requestHandler.handleInsertOraCredentialRequest(request);
+                return oraContent.insertOraCredential(request);
             case "update":
-                return requestHandler.handleUpdateOraCredentialRequest(request);
+                return oraContent.updateOraCredential(request);
             case "delete":
-                return requestHandler.handleDeleteContentOraUrlRequest(request);
+                return oraContent.deleteOraUrl(request);
         }
         return Response.createErrorResponse(request, "Error, unknown request type '" + request.getType() + "'");
     }
@@ -71,11 +85,11 @@ public class GetAwrRestController {
 
         switch (request.getType()) {
             case "content":
-                return requestHandler.getUsers(request);
+                return admin.getUsers(request);
             case "operate":
-                return requestHandler.operateUser(request);
+                return admin.operateUser(request);
             case "insert":
-                return requestHandler.insertUser(request);
+                return admin.insertUser(request);
         }
         return Response.createErrorResponse(request, "Error, unknown request type '" + request.getType() + "'");
     }

@@ -1,31 +1,33 @@
 package app.db.utils;
 
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OracleTenantIdentityResolver implements CurrentTenantIdentifierResolver {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OracleTenantIdentityResolver.class);
     private static final ThreadLocal<String> ID_URL_DATABASE_CONNECTION = new ThreadLocal<>();
-    private static final String ID_FOR_FIRST_INFO_DATASOURCE = "0000000001";
 
     static {
         ID_URL_DATABASE_CONNECTION.set(null);
     }
 
-    public static final String getIdUrlConnectionToDB() {
+    public static String getIdUrlConnectionToDB() {
         return ID_URL_DATABASE_CONNECTION.get();
     }
 
-    public static final void setIdUrlConnectionToDB(final String tennantId) {
-        ID_URL_DATABASE_CONNECTION.set(tennantId);
-    }
+    public static void setIdUrlConnectionToDB(final String tennantId) {
 
-    public static final String getIdForFirstInfoDatasource() {
-        return ID_FOR_FIRST_INFO_DATASOURCE;
+        LOG.info("setIdUrlConnectionToDB: ", tennantId);
+        ID_URL_DATABASE_CONNECTION.set(tennantId);
     }
 
     @Override
     public String resolveCurrentTenantIdentifier() {
-        return ID_URL_DATABASE_CONNECTION.get() == null ? ID_FOR_FIRST_INFO_DATASOURCE : ID_URL_DATABASE_CONNECTION.get();
+
+        LOG.info("resolveCurrentTenantIdentifier: ", ID_URL_DATABASE_CONNECTION.get());
+        return ID_URL_DATABASE_CONNECTION.get() != null ? ID_URL_DATABASE_CONNECTION.get() : "0000001";
     }
 
     @Override

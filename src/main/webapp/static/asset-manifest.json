@@ -1,11 +1,9 @@
 {
-  "main.js": "/getawr/static/static/js/main.9bb249f0.chunk.js",
-  "main.js.map": "/getawr/static/static/js/main.9bb249f0.chunk.js.map",
-  "static/js/1.49ceb802.chunk.js": "/getawr/static/static/js/1.49ceb802.chunk.js",
-  "static/js/1.49ceb802.chunk.js.map": "/getawr/static/static/js/1.49ceb802.chunk.js.map",
+  "main.css": "/getawr/static/static/css/main.f1a3ee84.chunk.css",
+  "main.js": "/getawr/static/static/js/main.23a63dda.chunk.js",
+  "static/js/1.ec4a2667.chunk.js": "/getawr/static/static/js/1.ec4a2667.chunk.js",
   "runtime~main.js": "/getawr/static/static/js/runtime~main.9c07b39d.js",
-  "runtime~main.js.map": "/getawr/static/static/js/runtime~main.9c07b39d.js.map",
   "index.html": "/getawr/static/index.html",
-  "precache-manifest.d5d915dd57ca402134df357b901c3b4e.js": "/getawr/static/precache-manifest.d5d915dd57ca402134df357b901c3b4e.js",
+  "precache-manifest.34aa41081b95e2191d08ea83c345f3ba.js": "/getawr/static/precache-manifest.34aa41081b95e2191d08ea83c345f3ba.js",
   "service-worker.js": "/getawr/static/service-worker.js"
 }

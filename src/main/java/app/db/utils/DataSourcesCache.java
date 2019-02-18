@@ -1,14 +1,13 @@
 package app.db.utils;
 
-import app.db.services.h2.H2Service;
+import app.db.services.apiservice.ContentOraInfoJpaService;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 
@@ -17,36 +16,38 @@ public class DataSourcesCache {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataSourcesCache.class);
 
-    private final LoadingCache<String, BasicDataSource> cache;
+    private final LoadingCache<String, DataSource> cache;
 
     @SuppressWarnings("unchecked")
-    public DataSourcesCache(final CacheBuilder cacheBuilder, final H2Service h2Service) {
+    public DataSourcesCache(final CacheBuilder cacheBuilder, final ContentOraInfoJpaService contentService) {
 
-        final CacheLoader<String, BasicDataSource> cacheLoader = new CacheLoader<String, BasicDataSource>() {
+        final CacheLoader<String, DataSource> cacheLoader = new CacheLoader<String, DataSource>() {
             @Override
-            public BasicDataSource load(String id) throws Exception {
-                return h2Service.createDataSourceByIdUrl(Long.parseLong(id));
+            public DataSource load(String id) throws Exception {
+                return contentService.createDataSource(Long.parseLong(id));
             }
         };
 
-        final RemovalListener<String, BasicDataSource> removalListener = removalNotification -> {
-            try {
-                removalNotification.getValue().close();
-            } catch (SQLException e) {
-                LOG.error(e.getMessage());
-            }
-        };
-
-        this.cache = cacheBuilder.removalListener(removalListener).build(cacheLoader);
+//        final RemovalListener<String, DriverManagerDataSource> removalListener = removalNotification -> {
+//            try {
+//                removalNotification.getValue().close();
+//            } catch (SQLException e) {
+//                LOG.error(e.getMessage());
+//            }
+//        };
+                                /*removalListener(removalListener).*/
+        this.cache = cacheBuilder.build(cacheLoader);
     }
 
-    public final BasicDataSource get(final String tennantId) {
 
+    public final DataSource get(final String tennantId) {
+
+        LOG.info("Get datasource: ", tennantId);
         try {
             return cache.get(tennantId);
 
         } catch (ExecutionException e) {
-            LOG.error(e.getMessage());
+            LOG.error("get", e);
             return null;
         }
     }
@@ -54,28 +55,28 @@ public class DataSourcesCache {
 
     public final boolean updateDataSource(final String tennantId) {
 
+        LOG.info("Update datasource: ", tennantId);
         cache.refresh(tennantId);
         return checkConnect(tennantId);
     }
 
+
     public final void removeDataSource(final String tennantId) {
 
+        LOG.info("Remove datasource: ", tennantId);
         cache.invalidate(tennantId);
     }
 
+
     public final boolean checkConnect(final String tennantId) {
 
+        LOG.info("Check connection datasource: ", tennantId);
         try {
             cache.get(tennantId).getConnection().close();
+            LOG.info("Connected successful: ", tennantId);
+        } catch (SQLException | ExecutionException e) {
 
-        } catch (SQLException e) {
-
-            LOG.error(e.getMessage());
-            cache.invalidate(tennantId);
-            return false;
-        } catch (ExecutionException e) {
-
-            LOG.error(e.getMessage());
+            LOG.error("checkConnect", e);
             cache.invalidate(tennantId);
             return false;
         }

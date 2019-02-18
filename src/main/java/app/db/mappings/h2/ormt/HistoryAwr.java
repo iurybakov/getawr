@@ -19,8 +19,9 @@ public class HistoryAwr {
     @Column(name = "snapTo", nullable = false)
     private Long snapTo;
 
+    @Lob
     @Column(name = "report", nullable = false)
-    private char[] report;
+    private String report;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
@@ -59,11 +60,11 @@ public class HistoryAwr {
         this.snapTo = snapTo;
     }
 
-    public char[] getReport() {
+    public String getReport() {
         return report;
     }
 
-    public void setReport(char[] report) {
+    public void setReport(String report) {
         this.report = report;
     }
 

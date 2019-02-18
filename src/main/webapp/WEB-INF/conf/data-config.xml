@@ -53,7 +53,7 @@
     <bean id="dataSourceCache" class="app.db.utils.DataSourcesCache">
         <constructor-arg>
             <bean class="com.google.common.cache.CacheBuilder" factory-method="from">
-                <constructor-arg value="concurrencyLevel=16, initialCapacity=32, maximumSize=128, expireAfterAccess=1h"/>
+                <constructor-arg value="${guava.cache}"/>
             </bean>
         </constructor-arg>
         <constructor-arg ref="h2Service"/>
@@ -92,6 +92,7 @@
 
     <bean id="oracleService" class="app.db.services.ora.OracleService"/>
     <bean id="adminAppH2Service" class="app.db.services.h2.AdminAppH2Service"/>
+    <bean id="historyAwrH2Service" class="app.db.services.h2.HistoryAwrH2Service"/>
 
 </beans>
 

@@ -12,10 +12,23 @@
     <mvc:annotation-driven />
     <context:component-scan base-package="app.web.controller" />
 
-    <bean id="requestHandler" class="app.web.controller.RequestHandler">
+    <bean id="admin" class="app.web.handlers.AdminHandler">
+        <constructor-arg ref="adminAppH2Service" />
+    </bean>
+
+    <bean id="awrHistory" class="app.web.handlers.AwrHistoryHandler">
+        <constructor-arg ref="historyAwrH2Service" />
+    </bean>
+
+    <bean id="oracleAwr" class="app.web.handlers.OracleAwrHandler">
+        <constructor-arg ref="oracleService" />
+        <constructor-arg ref="dataSourceCache" />
+        <constructor-arg ref="historyAwrH2Service" />
+    </bean>
+
+    <bean id="oraContent" class="app.web.handlers.OraContentHandler">
         <constructor-arg ref="h2Service" />
         <constructor-arg ref="oracleService" />
-        <constructor-arg ref="adminAppH2Service" />
         <constructor-arg ref="dataSourceCache" />
     </bean>
 

@@ -43,21 +43,6 @@ public class OraUrl {
         return this.getOraMeta().getName();
     }
 
-    public boolean initUrlFields(final Map<String, String> credentials) {
-        try {
-            for (Map.Entry<String, String> entry : credentials.entrySet())
-                this.getClass().getDeclaredField(entry.getKey()).set(this, entry.getValue());
-        } catch (NoSuchFieldException | IllegalAccessException ex) {
-            this.setHost(null);
-            this.setPort(null);
-            this.setSid(null);
-            this.setLogin(null);
-            this.setPass(null);
-            return false;
-        }
-        return true;
-    }
-
     public Long getId() {
         return id;
     }

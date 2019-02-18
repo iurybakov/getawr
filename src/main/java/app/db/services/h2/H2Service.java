@@ -4,22 +4,30 @@ import app.db.mappings.h2.ormt.OraMeta;
 import app.db.mappings.h2.ormt.OraUrl;
 import app.db.repositories.h2.OraMetaRepository;
 import app.db.repositories.h2.OraUrlRepository;
+import app.db.services.apiservice.ContentOraInfoJpaService;
 import app.web.json.ResponseData;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
-import java.util.*;
+import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Service
-public class H2Service {
+public class H2Service implements ContentOraInfoJpaService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(H2Service.class);
 
     @Autowired
     private OraUrlRepository oraUrlRepository;
@@ -28,8 +36,9 @@ public class H2Service {
 
 
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
-    public ResponseData getOraMetaResponseData(final Map<String, String> filter, final Pageable pageNum)  {
+    public ResponseData getOraMeta(final Map<String, String> filter, final Pageable pageNum) {
 
+        LOG.info("getOraMetaResponseData");
         final ResponseData responseData = new ResponseData();
         final Map<String, String> properties = new HashMap<>();
         Page<OraMeta> page;
@@ -56,8 +65,10 @@ public class H2Service {
         return responseData;
     }
 
-    public BasicDataSource createDataSourceByIdUrl(final Long id) throws Exception {
 
+    public DataSource createDataSource(final Long id) throws Exception {
+
+        LOG.info("createDataSourceByIdUrl");
         final OraUrl url = oraUrlRepository.findByIdAndDeleted(id, false);
 
         if (url == null)
@@ -71,9 +82,12 @@ public class H2Service {
 
         return dataSource;
     }
-    @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
-    public ResponseData getOraUrlResponseData(final Map<String, String> filter, final Pageable pageNum) {
 
+
+    @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
+    public ResponseData getOraUrl(final Map<String, String> filter, final Pageable pageNum) {
+
+        LOG.info("getOraUrlResponseData");
         final ResponseData responseData = new ResponseData();
         final Map<String, String> properties = new HashMap<>();
         Page<OraUrl> page;
@@ -104,15 +118,23 @@ public class H2Service {
         responseData.setData(page.getContent());
         return responseData;
     }
-    @Transactional(transactionManager = "h2TransactionManager")
-    public String insertNewOraCredential(final Map<String, String> credential) {
 
+
+    @Transactional(transactionManager = "h2TransactionManager")
+    public String insertOraCredential(final Map<String, String> credential) {
+
+        LOG.info("insertNewOraCredential");
         final OraUrl oraUrl = new OraUrl();
         final OraMeta oraMeta = new OraMeta();
         final String responseMessage = "row inserted successfully";
 
         oraMeta.setName(credential.remove("name"));
-        oraUrl.initUrlFields(credential);
+
+        oraUrl.setHost(credential.get("host"));
+        oraUrl.setPort(credential.get("port"));
+        oraUrl.setSid(credential.get("sid"));
+        oraUrl.setLogin(credential.get("login"));
+        oraUrl.setPass(credential.get("pass"));
 
         oraMetaRepository.save(oraMeta);
         oraUrl.setId(oraMeta.getId());
@@ -124,21 +146,38 @@ public class H2Service {
 
         return responseMessage;
     }
-    @Transactional(transactionManager = "h2TransactionManager")
-    public String updateOraCredential(Map<String, String> credential) {
 
-        OraUrl url = oraUrlRepository.findById(Long.parseLong(credential.remove("id"))).get();
-        url.getOraMeta().setName(credential.remove("name"));
+
+    @Transactional(transactionManager = "h2TransactionManager")
+    public String updateOraCredential(Map<String, String> credential) throws Exception {
+
+        LOG.info("updateOraCredential");
+
+        final Optional<OraUrl> optionalOraUrl = oraUrlRepository.findById(Long.parseLong(credential.get("id")));
+
+        if (!optionalOraUrl.isPresent())
+            throw new Exception("Unable upade ora credential, not found row");
+
+        final OraUrl url = optionalOraUrl.get();
+        url.getOraMeta().setName(credential.get("name"));
         if (credential.get("pass").matches("=*"))
             credential.put("pass", url.getPass());
-        url.initUrlFields(credential);
+
+        url.setHost(credential.get("host"));
+        url.setPort(credential.get("port"));
+        url.setSid(credential.get("sid"));
+        url.setLogin(credential.get("login"));
+        url.setPass(credential.get("pass"));
+
         oraUrlRepository.save(url);
 
         return "row updated successfully";
     }
 
+
     public void updateOraMeta(Map<String, String> credential) throws Exception {
 
+        LOG.info("updateOraMeta");
         final OraMeta meta = oraMetaRepository.findById(Long.parseLong(credential.get("id"))).get();
 
         meta.setOs(credential.get("os"));
@@ -146,9 +185,11 @@ public class H2Service {
 
         oraMetaRepository.save(meta);
     }
+
     @Transactional(transactionManager = "h2TransactionManager")
     public String deleteOraCredentials(final List<Long> credentialId) {
 
+        LOG.info("deleteOraCredentials");
         Iterable<OraUrl> oraUrlIterable = oraUrlRepository.findAllById(credentialId);
 
         oraUrlIterable.forEach(url -> {
@@ -161,9 +202,12 @@ public class H2Service {
 
         return "attempt to delete " + credentialId.size() + " rows passed successfully";
     }
+
+
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public boolean checkNameExists(final String name) {
 
+        LOG.info("checkNameExists");
         final Long count = oraMetaRepository.countByNameAndDeleted(name, false);
         return count != null && count != 0;
     }
