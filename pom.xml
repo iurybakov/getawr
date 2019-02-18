@@ -30,8 +30,8 @@
         <!-- wildfly deploy credentials -->
         <wildfly-hostname>176.53.162.238</wildfly-hostname>
         <wildfly-port>9990</wildfly-port>
-        <wildfly-username>rybakov</wildfly-username>
-        <wildfly-password>zpOMG6xz</wildfly-password>
+        <wildfly-username>******</wildfly-username>
+        <wildfly-password>******</wildfly-password>
         <wildfly-plugin-version>2.0.0.Final</wildfly-plugin-version>
     </properties>
 
