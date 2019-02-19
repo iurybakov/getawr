@@ -61,7 +61,7 @@ public class OracleAwrHandler implements OracleAwrApiRequestHandler {
             if (report == null) {
                 report = oracleService.getAwr(stringLongMap);
                 historyAwrH2Service.saveReport(filter.get("dbName"), stringLongMap, report);
-                return Response.createSuccessResponse(request, oracleService.getAwr(stringLongMap));
+                return Response.createSuccessResponse(request, report);
             }
 
 
