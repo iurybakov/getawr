@@ -82,13 +82,13 @@ public class OracleService implements OracleJpaService {
             dbaHistSnapshot = listSnap.get(1);
 
         if(dbaHistSnapshot.getSnapId() > listSnap.get(0).getSnapId()) {
-            snapsMap.put("fromDate", listSnap.get(0).getBeginIntervalTime().getTime());
+            snapsMap.put("fromDate", listSnap.get(0).getEndIntervalTime().getTime());
             snapsMap.put("fromSnap", listSnap.get(0).getSnapId());
             snapsMap.put("toDate", dbaHistSnapshot.getEndIntervalTime().getTime());
             snapsMap.put("toSnap", dbaHistSnapshot.getSnapId());
         }
         else {
-            snapsMap.put("fromDate", dbaHistSnapshot.getBeginIntervalTime().getTime());
+            snapsMap.put("fromDate", dbaHistSnapshot.getEndIntervalTime().getTime());
             snapsMap.put("fromSnap", dbaHistSnapshot.getSnapId());
             snapsMap.put("toDate", listSnap.get(0).getEndIntervalTime().getTime());
             snapsMap.put("toSnap", listSnap.get(0).getSnapId());
