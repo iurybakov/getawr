@@ -33,7 +33,6 @@ public class Request {
         this.type = type;
     }
 
-
     public RequestData getBody() {
         return body;
     }

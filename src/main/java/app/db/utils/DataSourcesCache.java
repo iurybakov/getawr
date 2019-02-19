@@ -76,7 +76,7 @@ public class DataSourcesCache {
             LOG.info("Connected successful: ", tennantId);
         } catch (SQLException | ExecutionException e) {
 
-            LOG.error("checkConnect", e);
+            LOG.error("checkConnect: unable connect");
             cache.invalidate(tennantId);
             return false;
         }

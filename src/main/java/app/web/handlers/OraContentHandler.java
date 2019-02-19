@@ -29,6 +29,7 @@ public class OraContentHandler implements OraContentApiRequestHandler {
         this.dataSourcesCache = dataSourcesCache;
     }
 
+
     public final Response getContentOraMeta(final Request request) {
 
         try {
@@ -95,8 +96,8 @@ public class OraContentHandler implements OraContentApiRequestHandler {
                 }
             } catch (Exception ex) {
                 status.append(", but '");
-                status.append(ex.getMessage().subSequence(0, 50));
-                status.append("...'");
+                status.append(ex.getMessage());
+                LOG.error("handleInsertOraCredentialRequest");
                 ex.printStackTrace();
             }
 

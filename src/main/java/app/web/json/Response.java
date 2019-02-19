@@ -15,6 +15,7 @@ public class Response {
     private Response() {
     }
 
+
     public static final Response createErrorResponse(final Request request, final String message) {
         final Response response = new Response();
         response.setRequestId(request.getId());
@@ -24,6 +25,7 @@ public class Response {
         return response;
     }
 
+
     public static final Response createSuccessResponse(final Request request, final Object body) {
         final Response response = new Response();
         response.setRequestId(request.getId());
@@ -31,6 +33,7 @@ public class Response {
         response.body = body;
         return response;
     }
+
 
     public String getId() {
         return id;

@@ -64,6 +64,7 @@ public class OracleAwrHandler implements OracleAwrApiRequestHandler {
                 return Response.createSuccessResponse(request, oracleService.getAwr(stringLongMap));
             }
 
+
             return Response.createSuccessResponse(request, report);
         } catch (Exception ex) {
             LOG.error("handleGetOracleAwrRequest", ex);

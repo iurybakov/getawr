@@ -1,13 +1,11 @@
 package app.db.mappings.h2.ormt;
 
-import app.db.mappings.h2.ormt.OraMeta;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Map;
 
 @JsonIgnoreProperties({"pass", "date", "deleted", "oraMeta"})
 @Entity

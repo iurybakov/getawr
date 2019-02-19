@@ -1,7 +1,6 @@
 package app.web.handlers;
 
 import app.db.services.apiservice.AdminJpaService;
-import app.db.services.h2.AdminAppH2Service;
 import app.web.apihandle.AdminApiRequestHandler;
 import app.web.json.Request;
 import app.web.json.Response;

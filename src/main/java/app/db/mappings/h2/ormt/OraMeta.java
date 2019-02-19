@@ -14,7 +14,7 @@ public class OraMeta {
     @GeneratedValue(generator = "IDO", strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "name", nullable = false, unique = true) // TODO add name + _host rule of naming in ui
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
     @Column(name = "version", nullable = false)
     private String version = "unknown";

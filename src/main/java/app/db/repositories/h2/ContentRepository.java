@@ -8,6 +8,7 @@ import org.springframework.lang.Nullable;
 
 @NoRepositoryBean
 public interface ContentRepository<T, ID extends Long> extends PagingAndSortingRepository<T, Long> {
+
     @Nullable
     Page<T> findByDeleted(Boolean deleted, Pageable pageable);
 }
