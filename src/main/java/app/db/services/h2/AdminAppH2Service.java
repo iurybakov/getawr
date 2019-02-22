@@ -49,6 +49,7 @@ public class AdminAppH2Service implements AdminJpaService {
         tblUsersRepository.save(tblUsers);
     }
 
+
     @Transactional(transactionManager = "h2TransactionManager")
     private boolean operate(final Long id, final String action) {
 
@@ -79,6 +80,7 @@ public class AdminAppH2Service implements AdminJpaService {
 
         return true;
     }
+
 
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public ResponseData getListUsers(final Pageable pageNum) {

@@ -15,7 +15,6 @@ import java.io.IOException;
 public class AuthenticationFailHandler extends SimpleUrlAuthenticationFailureHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFailHandler.class);
-    private String defaultFailureUrl = null;
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {

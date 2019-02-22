@@ -186,6 +186,7 @@ public class H2Service implements ContentOraInfoJpaService {
         oraMetaRepository.save(meta);
     }
 
+
     @Transactional(transactionManager = "h2TransactionManager")
     public String deleteOraCredentials(final List<Long> credentialId) {
 

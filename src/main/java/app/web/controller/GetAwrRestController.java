@@ -43,7 +43,7 @@ public class GetAwrRestController {
             case "awr":
                 return oracleAwr.getAwr(request);
         }
-        return Response.createErrorResponse(request, "Error, unknown request type '" + request.getType() + "'");
+        return Response.createErrorResponse(request, "Error, unknown request type");
     }
 
 
@@ -57,7 +57,7 @@ public class GetAwrRestController {
             case "awr":
                 return awrHistory.getAwr(request);
         }
-        return Response.createErrorResponse(request, "Error, unknown request type '" + request.getType() + "'");
+        return Response.createErrorResponse(request, "Error, unknown request type");
     }
 
 
@@ -75,7 +75,7 @@ public class GetAwrRestController {
             case "delete":
                 return oraContent.deleteOraUrl(request);
         }
-        return Response.createErrorResponse(request, "Error, unknown request type '" + request.getType() + "'");
+        return Response.createErrorResponse(request, "Error, unknown request type");
     }
 
 
@@ -91,6 +91,6 @@ public class GetAwrRestController {
             case "insert":
                 return admin.insertUser(request);
         }
-        return Response.createErrorResponse(request, "Error, unknown request type '" + request.getType() + "'");
+        return Response.createErrorResponse(request, "Error, unknown request type");
     }
 }

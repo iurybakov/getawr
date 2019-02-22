@@ -32,6 +32,7 @@ public class OracleService implements OracleJpaService {
     @Autowired
     private OracleSnapRepository oracleSnapRepository;
 
+
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     public void setInMapOperatingSystemAndVersion(final Map<String, String> credentialOraMeta) {
 
@@ -42,6 +43,7 @@ public class OracleService implements OracleJpaService {
         credentialOraMeta.put("os", platformName.getSingleResult().toString());
         credentialOraMeta.put("version", version.getSingleResult().toString());
     }
+
 
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     public ResponseData getPeriods() throws Exception {
