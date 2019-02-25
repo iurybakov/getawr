@@ -4,29 +4,29 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "TBL_USER_ROLE", schema = "SEC_USERS")
-@SequenceGenerator(name = "IDS", sequenceName = "TBL_USERS_SEQUENCE", allocationSize = 1, schema = "SEC_USERS")
+@SequenceGenerator(name = "IDR", sequenceName = "TBL_USERS_ROLE_SEQUENCE", allocationSize = 1, schema = "SEC_USERS")
 public class TblUserRole {
 
     @Id
-    @GeneratedValue(generator = "IDS", strategy = GenerationType.SEQUENCE)
-    @Column(name = "userId", nullable = false)
-    private Long userId;
-    @Column(name = "roleName", nullable = false)
-    private String roleName;
+    @GeneratedValue(generator = "IDR", strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", nullable = false)
+    private Long id;
+    @Column(name = "rolename", nullable = false, unique = true)
+    private String rolename;
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getRoleName() {
-        return roleName;
+    public String getRolename() {
+        return rolename;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setRolename(String roleName) {
+        this.rolename = roleName;
     }
 }

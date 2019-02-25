@@ -36,15 +36,15 @@ public class AdminAppH2Service implements AdminJpaService {
             throw new Exception("Specify username is exists");
 
         final TblUsers tblUsers = new TblUsers();
-        final TblUserRole tblUserRole = new TblUserRole();
 
-        tblUserRole.setRoleName(credential.get("role"));
-        tblUserRoleRepository.save(tblUserRole);
+        final TblUserRole tblUserRole = tblUserRoleRepository.findByRolename(credential.get("role"));
+        if (tblUserRole == null)
+            throw new Exception("unknown user role");
+
+        tblUsers.setTblUserRole(tblUserRole);
 
         tblUsers.setUsername(credential.get("user"));
         tblUsers.setPassword(credential.get("pass"));
-
-        tblUsers.setId(tblUserRole.getUserId());
 
         tblUsersRepository.save(tblUsers);
     }
