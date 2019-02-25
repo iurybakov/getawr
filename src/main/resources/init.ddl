@@ -17,7 +17,7 @@ create table if not exists
                         deleted boolean not null,
                         primary key (id),
                         unique(username),
-                        foreign key (role_id) references SEC_USERS.TBL_USER_ROLE (id) on delete cascade);
+                        foreign key (role_id) references SEC_USERS.TBL_USER_ROLE (id));
 
 create sequence if not exists
     SEC_USERS.TBL_USERS_ROLE_SEQUENCE start with 1 increment by 1;
