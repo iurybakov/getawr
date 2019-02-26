@@ -47,7 +47,7 @@
                                  SELECT     U.USERNAME, R.ROLENAME
                                  FROM       SEC_USERS.TBL_USERS U
                                  JOIN       SEC_USERS.TBL_USER_ROLE R
-                                 ON     U.ID = R.USERID
+                                 ON     U.ROLE_ID = R.ID
                                  WHERE  U.DELETED=false AND U.USERNAME=?;"/>
 
             <s:password-encoder ref="authEncoder" hash="bcrypt"/>
