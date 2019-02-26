@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -33,6 +32,11 @@ public class OracleService implements OracleJpaService {
     private OracleSnapRepository oracleSnapRepository;
 
 
+    /*
+    #
+    # On insert or update new Oracle url connection get info about host OS and version Oracle DB
+    #
+    */
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     public void setInMapOperatingSystemAndVersion(final Map<String, String> credentialOraMeta) {
 
@@ -45,6 +49,11 @@ public class OracleService implements OracleJpaService {
     }
 
 
+    /*
+    #
+    # Get available shapshots period awr report, on click on table row for home table ('/home' endpoints)
+    #
+    */
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     public ResponseData getPeriods() throws Exception {
 
@@ -58,6 +67,11 @@ public class OracleService implements OracleJpaService {
     }
 
 
+    /*
+    #
+    # Get bounds awr report between specify dates, on click 'Get report' on home page ('/home' endpoints)
+    #
+    */
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     @SuppressWarnings("unchecked")
     public Map<String, Long> getSnapsId(Map<String, String> data) throws Exception {
@@ -103,6 +117,11 @@ public class OracleService implements OracleJpaService {
     }
 
 
+    /*
+    #
+    # Get awr report from Oracle DB
+    #
+    */
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     @SuppressWarnings("unchecked")
     public String getAwr(Map<String, Long> data) throws Exception {

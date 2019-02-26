@@ -20,6 +20,11 @@ public class AwrHistoryHandler implements AwrHistoryApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Get content on '/history' endpoint
+    #
+    */
     public final Response getContent(final Request request) {
 
         try {
@@ -31,6 +36,11 @@ public class AwrHistoryHandler implements AwrHistoryApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Get awr by click row on '/history' endpoint
+    #
+    */
     public final Response getAwr(final Request request) {
 
         try {

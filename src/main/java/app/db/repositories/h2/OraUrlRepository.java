@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 
 
 public interface OraUrlRepository extends ContentRepository<OraUrl, Long>, JpaSpecificationExecutor<OraUrl> {
+
     @Nullable
     OraUrl findByIdAndDeleted(final Long id, final Boolean deleted);
 }

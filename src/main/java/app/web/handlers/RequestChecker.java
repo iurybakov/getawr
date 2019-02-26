@@ -12,8 +12,14 @@ class RequestChecker {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestChecker.class);
 
+
+    /*
+    #
+    # Check json data for corrected operation insert or update on '/edit' endpoints (ROLE_USER and ROLE_ADMIN)
+    #
+    */
     @SuppressWarnings("unchecked")
-    protected static final void checkCredentialForInsertOrUpdate(final Request request, final ContentOraInfoJpaService h2Service, final String... pattern) throws Exception {
+    protected static void checkCredentialForInsertOrUpdate(final Request request, final ContentOraInfoJpaService h2Service, final String... pattern) throws Exception {
 
         final Map<String, ?> data = request.getBody().getData();
 
@@ -33,7 +39,12 @@ class RequestChecker {
     }
 
 
-    protected static final void compareFieldsByPattern(final Map<String, String> fields, String... pattern) throws Exception {
+    /*
+    #
+    # Check map keys by pattern and check map values on isn't empty
+    #
+    */
+    protected static void compareFieldsByPattern(final Map<String, String> fields, String... pattern) throws Exception {
 
         for (Map.Entry<String, String> entry : fields.entrySet())
             if (Arrays.stream(pattern).noneMatch(patternMember -> patternMember.equals(entry.getKey()))
@@ -43,7 +54,12 @@ class RequestChecker {
     }
 
 
-    protected static final void strictCompareFieldsByPatter(final Map<String, String> fields, String... pattern) throws Exception {
+    /*
+    #
+    # Check map keys by pattern and check map values on isn't empty. Also check equal count map and pattern elements
+    #
+    */
+    protected static void strictCompareFieldsByPatter(final Map<String, String> fields, String... pattern) throws Exception {
 
         if (fields.size() != pattern.length)
             throw new Exception("Error, wrong count fields");
@@ -52,7 +68,12 @@ class RequestChecker {
     }
 
 
-    protected static final PageRequest getPage(final Map<String, String> mapWithPage) throws Exception {
+    /*
+    #
+    # Create PageRequest from map (filter)
+    #
+    */
+    protected static PageRequest getPage(final Map<String, String> mapWithPage) throws Exception {
 
         if (!mapWithPage.keySet().containsAll(Arrays.asList("pageNumber", "countRowsPerPage")))
             throw new Exception("Error, not found filter criteria 'pageNumber' or 'countRowsPerPage'");
@@ -64,8 +85,13 @@ class RequestChecker {
     }
 
 
+    /*
+    #
+    # Check exists and get map data from request by key filter
+    #
+    */
     @SuppressWarnings("unchecked")
-    protected static final Map<String, String> getFilter(final Request request) throws Exception {
+    protected static Map<String, String> getFilter(final Request request) throws Exception {
 
         final Map<String, ?> data = request.getBody().getData();
 

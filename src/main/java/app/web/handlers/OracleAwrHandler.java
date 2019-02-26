@@ -28,6 +28,11 @@ public class OracleAwrHandler implements OracleAwrApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Get min max awr report period for set bound in timepicker UI
+    #
+    */
     public final Response getMinMaxPeriod(final Request request) {
 
         if (request.getBody().getIntegerList() == null || request.getBody().getIntegerList().size() == 0)
@@ -44,6 +49,11 @@ public class OracleAwrHandler implements OracleAwrApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Check exists awr in history, get, and if not exists go to Oracle DB
+    #
+    */
     public final Response getAwr(final Request request) {
 
         try {

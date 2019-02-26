@@ -30,6 +30,11 @@ public class OraContentHandler implements OraContentApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Get content for home table on '/home' endpoints
+    #
+    */
     public final Response getContentOraMeta(final Request request) {
 
         try {
@@ -46,6 +51,11 @@ public class OraContentHandler implements OraContentApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Get content for edit table on '/edit' endpoints (ROLE_USER and ROLE_ADMIN)
+    #
+    */
     public final Response getContentOraUrl(final Request request) {
 
         try {
@@ -62,6 +72,11 @@ public class OraContentHandler implements OraContentApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Delete (hide) Oracle url connection on '/edit' endpoints (ROLE_USER and ROLE_ADMIN)
+    #
+    */
     public final Response deleteOraUrl(final Request request) {
 
         if (request.getBody().getIntegerList() == null)
@@ -79,6 +94,11 @@ public class OraContentHandler implements OraContentApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Add new Oracle url entry on '/edit' endpoints (ROLE_USER and ROLE_ADMIN)
+    #
+    */
     @SuppressWarnings("unchecked")
     public final Response insertOraCredential(final Request request) {
 
@@ -109,6 +129,11 @@ public class OraContentHandler implements OraContentApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Update exists Oracle url entry on '/edit' endpoints (ROLE_USER and ROLE_ADMIN)
+    #
+    */
     @SuppressWarnings("unchecked")
     public final Response updateOraCredential(final Request request) {
 

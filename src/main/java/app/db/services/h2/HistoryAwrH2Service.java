@@ -29,6 +29,12 @@ public class HistoryAwrH2Service implements HistoryAwrJpaService {
     @Autowired
     private HistoryAwrDateRepository historyAwrDateRepository;
 
+
+    /*
+    #
+    # Get saved awr file by filter from home page directly ('/home' endpoint)
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public String getSavedAwr(final Map<String, Long> credentials) {
 
@@ -43,6 +49,12 @@ public class HistoryAwrH2Service implements HistoryAwrJpaService {
         return historyAwrList.get(0).getReport();
     }
 
+
+    /*
+    #
+    # Get saved awr file by id from history page ('/history' endpoint)
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public String getSavedAwr(final Long credentialId) {
 
@@ -56,6 +68,11 @@ public class HistoryAwrH2Service implements HistoryAwrJpaService {
     }
 
 
+    /*
+    #
+    # Get content for history page ('/history' endpoint)
+    #
+    */
     public ResponseData getHistoryList() {
 
         LOG.info("Get list reports from history");
@@ -66,12 +83,18 @@ public class HistoryAwrH2Service implements HistoryAwrJpaService {
         return new ResponseData().setData(list);
     }
 
+
+    /*
+    #
+    # Save awr report and reduce to 25 reports if needed
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager")
     public void saveReport(final String dbName, final Map<String, Long> credentials, final String awrReport) throws Exception {
 
         LOG.info("Save report in history");
 
-        final int MAX_HISTORY_ROWS = 30;
+        final int MAX_HISTORY_ROWS = 30; // TODO admin options
 
         try {
             if (historyAwrRepository.countByTennantIdAndSnapFromAndSnapTo(credentials.get("tennantId"),
@@ -101,6 +124,7 @@ public class HistoryAwrH2Service implements HistoryAwrJpaService {
             historyAwrRepository.save(historyAwr);
         } catch (Exception ex) {
             LOG.error(ex.getMessage() + " unable save report");
+            throw new Exception("unable save report");
         }
     }
 }

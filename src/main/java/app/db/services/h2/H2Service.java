@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.sql.DataSource;
@@ -35,6 +36,11 @@ public class H2Service implements ContentOraInfoJpaService {
     private OraMetaRepository oraMetaRepository;
 
 
+    /*
+    #
+    #  Get content by filter and pageable for table on '/home' endpoint
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public ResponseData getOraMeta(final Map<String, String> filter, final Pageable pageNum) {
 
@@ -59,6 +65,13 @@ public class H2Service implements ContentOraInfoJpaService {
             }, pageNum);
 
         properties.put("pageNumber", String.valueOf(pageNum.getPageNumber()));
+
+        if (page == null || page.isEmpty()) {
+            properties.put("allRows", "0");
+            responseData.setProperties(properties);
+            return responseData;
+        }
+
         properties.put("allRows", String.valueOf(page.getTotalElements()));
         responseData.setProperties(properties);
         responseData.setData(page.getContent());
@@ -66,6 +79,12 @@ public class H2Service implements ContentOraInfoJpaService {
     }
 
 
+    /*
+    #
+    #  Create new datasource object by tennantId for cache class, using if was click on row table
+    #  and cache doesn't contain datasource with this key (tennantid)
+    #
+    */
     public DataSource createDataSource(final Long id) throws Exception {
 
         LOG.info("createDataSourceByIdUrl");
@@ -84,6 +103,11 @@ public class H2Service implements ContentOraInfoJpaService {
     }
 
 
+    /*
+    #
+    #  Get content by filter and pageable for table on '/edit' endpoint
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public ResponseData getOraUrl(final Map<String, String> filter, final Pageable pageNum) {
 
@@ -113,6 +137,13 @@ public class H2Service implements ContentOraInfoJpaService {
             }, pageNum);
 
         properties.put("pageNumber", String.valueOf(pageNum.getPageNumber()));
+
+        if (page == null || page.isEmpty()) {
+            properties.put("allRows", "0");
+            responseData.setProperties(properties);
+            return responseData;
+        }
+
         properties.put("allRows", String.valueOf(page.getTotalElements()));
         responseData.setProperties(properties);
         responseData.setData(page.getContent());
@@ -120,6 +151,11 @@ public class H2Service implements ContentOraInfoJpaService {
     }
 
 
+    /*
+    #
+    #  Add new url connection for Oracle DB
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager")
     public String insertOraCredential(final Map<String, String> credential) {
 
@@ -148,6 +184,11 @@ public class H2Service implements ContentOraInfoJpaService {
     }
 
 
+    /*
+    #
+    #  Edit Oracle url connection
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager")
     public String updateOraCredential(Map<String, String> credential) throws Exception {
 
@@ -175,10 +216,21 @@ public class H2Service implements ContentOraInfoJpaService {
     }
 
 
+    /*
+    #
+    #  After update or insert save Oracle host OS and Oracle DB version
+    #
+    */
     public void updateOraMeta(Map<String, String> credential) throws Exception {
 
         LOG.info("updateOraMeta");
-        final OraMeta meta = oraMetaRepository.findById(Long.parseLong(credential.get("id"))).get();
+
+        final Optional<OraMeta> optionalOraMeta = oraMetaRepository.findById(Long.parseLong(credential.get("id")));
+
+        if (!optionalOraMeta.isPresent())
+            throw new Exception("Error update Oracle OS and Version");
+
+        final OraMeta meta = optionalOraMeta.get();
 
         meta.setOs(credential.get("os"));
         meta.setVersion(credential.get("version"));
@@ -187,6 +239,11 @@ public class H2Service implements ContentOraInfoJpaService {
     }
 
 
+    /*
+    #
+    #  Set flag deleted true and change name, but row is save
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager")
     public String deleteOraCredentials(final List<Long> credentialId) {
 
@@ -196,7 +253,7 @@ public class H2Service implements ContentOraInfoJpaService {
         oraUrlIterable.forEach(url -> {
             url.setDeleted(true);
             url.getOraMeta().setDeleted(true);
-            url.getOraMeta().setName("~" + url.getOraMeta().getName() + url.getId()); //TODO запретить добавлять записи, где имя с тильдой в начеле
+            url.getOraMeta().setName("~" + url.getOraMeta().getName() + url.getId()); //TODO forbid name with '~' in first
         });
 
         oraUrlRepository.saveAll(oraUrlIterable);
@@ -205,6 +262,11 @@ public class H2Service implements ContentOraInfoJpaService {
     }
 
 
+    /*
+    #
+    # Check unique name for table on '/edit' endpoint
+    #
+    */
     @Transactional(transactionManager = "h2TransactionManager", readOnly = true)
     public boolean checkNameExists(final String name) {
 

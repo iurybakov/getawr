@@ -23,6 +23,11 @@ public class AdminHandler implements AdminApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Add new user on '/edit/admin' endpoints (it's able only with ROLE_ADMIN)
+    #
+    */
     @SuppressWarnings("unchecked")
     public final Response insertUser(final Request request) {
 
@@ -43,6 +48,11 @@ public class AdminHandler implements AdminApiRequestHandler {
     }
 
 
+    /*
+    #
+    # Get content table on '/edit/admin' endpoints (it's able only with ROLE_ADMIN)
+    #
+    */
     public final Response getUsers(final Request request) {
 
         try {
@@ -56,6 +66,12 @@ public class AdminHandler implements AdminApiRequestHandler {
         }
     }
 
+
+    /*
+    #
+    # Disable or delete (hide) user on '/edit/admin' endpoints (it's able only with ROLE_ADMIN)
+    #
+    */
     @SuppressWarnings("unchecked")
     public final Response operateUser(final Request request) {
 
