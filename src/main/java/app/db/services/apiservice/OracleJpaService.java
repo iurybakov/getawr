@@ -10,7 +10,7 @@ public interface OracleJpaService {
 
     ResponseData getPeriods() throws Exception;
 
-    Map<String, Long> getSnapsId(Map<String, String> data) throws Exception;
+    Map<String, Long> getSnapsId(final Map<String, String> data) throws Exception;
 
-    String getAwr(Map<String, Long> data) throws Exception;
+    String getAwr(final Map<String, Long> data) throws Exception;
 }

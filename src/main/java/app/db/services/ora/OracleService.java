@@ -74,7 +74,7 @@ public class OracleService implements OracleJpaService {
     */
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     @SuppressWarnings("unchecked")
-    public Map<String, Long> getSnapsId(Map<String, String> data) throws Exception {
+    public Map<String, Long> getSnapsId(final Map<String, String> data) throws Exception {
 
         LOG.info("getSnapsId");
         final Map<String, Long> snapsMap = new HashMap<>();
@@ -124,7 +124,7 @@ public class OracleService implements OracleJpaService {
     */
     @Transactional(transactionManager = "oracleTransactionManager", readOnly = true)
     @SuppressWarnings("unchecked")
-    public String getAwr(Map<String, Long> data) throws Exception {
+    public String getAwr(final Map<String, Long> data) throws Exception {
 
         LOG.info("getAwr");
         final Query query = entityManager.createNativeQuery("SELECT output FROM TABLE(DBMS_WORKLOAD_REPOSITORY.AWR_REPORT_HTML(?1, ?2, ?3, ?4))");

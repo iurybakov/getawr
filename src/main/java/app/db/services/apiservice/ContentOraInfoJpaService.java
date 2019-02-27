@@ -17,9 +17,9 @@ public interface ContentOraInfoJpaService {
 
     String insertOraCredential(final Map<String, String> credential);
 
-    String updateOraCredential(Map<String, String> credential) throws Exception;
+    String updateOraCredential(final Map<String, String> credential) throws Exception;
 
-    void updateOraMeta(Map<String, String> credential) throws Exception;
+    void updateOraMeta(final Map<String, String> credential) throws Exception;
 
     String deleteOraCredentials(final List<Long> credentialId);
 
