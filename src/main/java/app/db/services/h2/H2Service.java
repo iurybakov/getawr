@@ -190,7 +190,7 @@ public class H2Service implements ContentOraInfoJpaService {
     #
     */
     @Transactional(transactionManager = "h2TransactionManager")
-    public String updateOraCredential(Map<String, String> credential) throws Exception {
+    public String updateOraCredential(final Map<String, String> credential) throws Exception {
 
         LOG.info("updateOraCredential");
 
@@ -221,7 +221,7 @@ public class H2Service implements ContentOraInfoJpaService {
     #  After update or insert save Oracle host OS and Oracle DB version
     #
     */
-    public void updateOraMeta(Map<String, String> credential) throws Exception {
+    public void updateOraMeta(final Map<String, String> credential) throws Exception {
 
         LOG.info("updateOraMeta");
 

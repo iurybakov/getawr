@@ -44,7 +44,7 @@ class RequestChecker {
     # Check map keys by pattern and check map values on isn't empty
     #
     */
-    protected static void compareFieldsByPattern(final Map<String, String> fields, String... pattern) throws Exception {
+    protected static void compareFieldsByPattern(final Map<String, String> fields, final String... pattern) throws Exception {
 
         for (Map.Entry<String, String> entry : fields.entrySet())
             if (Arrays.stream(pattern).noneMatch(patternMember -> patternMember.equals(entry.getKey()))
@@ -59,7 +59,7 @@ class RequestChecker {
     # Check map keys by pattern and check map values on isn't empty. Also check equal count map and pattern elements
     #
     */
-    protected static void strictCompareFieldsByPatter(final Map<String, String> fields, String... pattern) throws Exception {
+    protected static void strictCompareFieldsByPatter(final Map<String, String> fields, final String... pattern) throws Exception {
 
         if (fields.size() != pattern.length)
             throw new Exception("Error, wrong count fields");
