@@ -193,7 +193,6 @@ public class H2Service implements ContentOraInfoJpaService {
     public String updateOraCredential(final Map<String, String> credential) throws Exception {
 
         LOG.info("updateOraCredential");
-
         final Optional<OraUrl> optionalOraUrl = oraUrlRepository.findById(Long.parseLong(credential.get("id")));
 
         if (!optionalOraUrl.isPresent())
@@ -224,7 +223,6 @@ public class H2Service implements ContentOraInfoJpaService {
     public void updateOraMeta(final Map<String, String> credential) throws Exception {
 
         LOG.info("updateOraMeta");
-
         final Optional<OraMeta> optionalOraMeta = oraMetaRepository.findById(Long.parseLong(credential.get("id")));
 
         if (!optionalOraMeta.isPresent())
