@@ -64,7 +64,7 @@ public class AdminAppH2Service implements AdminJpaService {
         switch (action) {
             case "delete":
                 tbUs.setDeleted(true);
-                tbUs.setUsername("~" + tbUs.getUsername() + tbUs.getId()); //TODO запретить добавлять записи, где имя с тильдой в начеле
+                tbUs.setUsername("~" + tbUs.getUsername() + tbUs.getId()); //TODO forbid name with '~' in first
                 break;
             case "disable":
                 tbUs.setEnabled(false);
