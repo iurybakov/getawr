@@ -1,4 +1,4 @@
-/*.iml
-/.idea
-/src/main/webapp/static/*
+*.iml
+.idea
+src/main/webapp/static/*
 
