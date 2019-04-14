@@ -2,6 +2,7 @@ package app.db.services.h2;
 
 import app.db.mappings.h2.ormt.OraMeta;
 import app.db.mappings.h2.ormt.OraUrl;
+import app.db.repositories.h2.ContentRepository;
 import app.db.repositories.h2.OraMetaRepository;
 import app.db.repositories.h2.OraUrlRepository;
 import app.db.services.apiservice.ContentOraInfoJpaService;
@@ -35,7 +36,32 @@ public class H2Service implements ContentOraInfoJpaService {
     @Autowired
     private OraMetaRepository oraMetaRepository;
 
+    private void setCredentials(final OraUrl oraUrl, final Map<String, String> credential) {
 
+        oraUrl.setHost(credential.get("host"));
+        oraUrl.setPort(credential.get("port"));
+        oraUrl.setSid(credential.get("sid"));
+        oraUrl.setLogin(credential.get("login"));
+        oraUrl.setPass(credential.get("pass"));
+    }
+
+    private ResponseData setResponseData(final Page<?> page, final Map<String, String> properties, final ResponseData responseData, final Pageable pageNum) {
+
+        properties.put("pageNumber", String.valueOf(pageNum.getPageNumber()));
+
+        if (page == null || page.isEmpty()) {
+            properties.put("allRows", "0");
+            responseData.setProperties(properties);
+            return responseData;
+        }
+
+        properties.put("allRows", String.valueOf(page.getTotalElements()));
+        responseData.setProperties(properties);
+        responseData.setData(page.getContent());
+
+        return responseData;
+    }
+    
     /*
     #
     #  Get content by filter and pageable for table on '/home' endpoint
@@ -64,18 +90,8 @@ public class H2Service implements ContentOraInfoJpaService {
 
             }, pageNum);
 
-        properties.put("pageNumber", String.valueOf(pageNum.getPageNumber()));
 
-        if (page == null || page.isEmpty()) {
-            properties.put("allRows", "0");
-            responseData.setProperties(properties);
-            return responseData;
-        }
-
-        properties.put("allRows", String.valueOf(page.getTotalElements()));
-        responseData.setProperties(properties);
-        responseData.setData(page.getContent());
-        return responseData;
+        return setResponseData(page, properties, responseData, pageNum);
     }
 
 
@@ -136,18 +152,7 @@ public class H2Service implements ContentOraInfoJpaService {
 
             }, pageNum);
 
-        properties.put("pageNumber", String.valueOf(pageNum.getPageNumber()));
-
-        if (page == null || page.isEmpty()) {
-            properties.put("allRows", "0");
-            responseData.setProperties(properties);
-            return responseData;
-        }
-
-        properties.put("allRows", String.valueOf(page.getTotalElements()));
-        responseData.setProperties(properties);
-        responseData.setData(page.getContent());
-        return responseData;
+        return setResponseData(page, properties, responseData, pageNum);
     }
 
 
@@ -166,11 +171,7 @@ public class H2Service implements ContentOraInfoJpaService {
 
         oraMeta.setName(credential.remove("name"));
 
-        oraUrl.setHost(credential.get("host"));
-        oraUrl.setPort(credential.get("port"));
-        oraUrl.setSid(credential.get("sid"));
-        oraUrl.setLogin(credential.get("login"));
-        oraUrl.setPass(credential.get("pass"));
+        setCredentials(oraUrl, credential);
 
         oraMetaRepository.save(oraMeta);
         oraUrl.setId(oraMeta.getId());
@@ -203,11 +204,7 @@ public class H2Service implements ContentOraInfoJpaService {
         if (credential.get("pass").matches("=*"))
             credential.put("pass", url.getPass());
 
-        url.setHost(credential.get("host"));
-        url.setPort(credential.get("port"));
-        url.setSid(credential.get("sid"));
-        url.setLogin(credential.get("login"));
-        url.setPass(credential.get("pass"));
+        setCredentials(url, credential);
 
         oraUrlRepository.save(url);
 
